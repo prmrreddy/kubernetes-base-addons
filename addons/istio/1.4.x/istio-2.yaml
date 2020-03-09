@@ -39,6 +39,26 @@ spec:
     repo: https://mesosphere.github.io/charts/staging
     version: 1.4.3
     values: |
+      galley:
+        replicaCount: 2
+        
+      gateways:
+        istio-egressgateway:
+          autoscaleMin: 2
+          replicaCount: 2
+        istio-ingressgateway:
+          autoscaleMin: 2
+          replicaCount: 2
+        istio-ilbgateway:
+          autoscaleMin: 2
+          replicaCount: 2
+
+      grafana:
+        enabled: true
+
+      istiocoredns:
+        enabled: true
+
       kiali:
        enabled: true
        contextPath: /ops/portal/kiali
@@ -52,6 +72,33 @@ spec:
            strategy: anonymous
        prometheusAddr: http://prometheus-kubeaddons-prom-prometheus.kubeaddons:9090
 
+      mixer:
+        policy:
+          autoscaleMin: 2
+          replicaCount: 2
+        telemetry:
+          autoscaleMin: 2
+          replicaCount: 2
+
+      pilot:
+        autoscaleMin: 2
+        rollingMaxSurge: 2 
+               
+      prometheus:
+        serviceName: prometheus-kubeaddons-prom-prometheus.kubeaddons
+      
+      security:
+       selfSigned: false
+       caCert: /etc/cacerts/tls.crt
+       caKey: /etc/cacerts/tls.key
+       rootCert: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+       certChain: /etc/cacerts/tls.crt
+       enableNamespacesByDefault: false
+       replicaCount: 2
+
+      sidecarInjectorWebhook:
+        replicaCount: 2
+
       tracing:
         enabled: true
         contextPath: /ops/portal/jaeger
@@ -60,24 +107,7 @@ spec:
           kubernetes.io/ingress.class: traefik
           hosts:
             - ""
-
-      grafana:
-        enabled: true
-
-      prometheus:
-        serviceName: prometheus-kubeaddons-prom-prometheus.kubeaddons
-
-      istiocoredns:
-        enabled: true
-
-      security:
-       selfSigned: false
-       caCert: /etc/cacerts/tls.crt
-       caKey: /etc/cacerts/tls.key
-       rootCert: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-       certChain: /etc/cacerts/tls.crt
-       enableNamespacesByDefault: false
-
+        
       global:
        podDNSSearchNamespaces:
        - global
