@@ -1,6 +1,6 @@
 ---
 apiVersion: kubeaddons.mesosphere.io/v1beta1
-kind: ClusterAddon
+kind: Addon
 metadata:
   name: kubecost
   namespace: kubecost
@@ -11,7 +11,6 @@ metadata:
     appversion.kubeaddons.mesosphere.io/kubecost: "1.53.3"
     values.chart.helm.kubeaddons.mesosphere.io/kubecost: "https://raw.githubusercontent.com/kubecost/cost-analyzer-helm-chart/9fdd476e9938961eb415185f94c0a6319913927d/cost-analyzer/values.yaml"
 spec:
-  namespace: kubecost
   kubernetes:
     minSupportedVersion: v1.15.6
   cloudProvider:
