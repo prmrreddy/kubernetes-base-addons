@@ -24,8 +24,8 @@ spec:
     version: 1.72.16
     values: |
       ---
-      image: traefik
-      imageTag: 1.7.12
+      image: alejandroesc/traefik
+      imageTag: ae
       replicas: 2
       service:
         labels:
