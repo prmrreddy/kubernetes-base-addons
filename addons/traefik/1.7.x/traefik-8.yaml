@@ -26,6 +26,7 @@ spec:
       ---
       image: alejandroesc/traefik
       imageTag: ae
+      logLevel: error
       replicas: 2
       service:
         labels:
