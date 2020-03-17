@@ -24,8 +24,11 @@ spec:
     version: 1.72.16
     values: |
       ---
+      debug:
+        enabled: true
+      logLevel: error
       image: alejandroesc/traefik
-      imageTag: ae
+      imageTag: latest
       replicas: 2
       service:
         labels:
