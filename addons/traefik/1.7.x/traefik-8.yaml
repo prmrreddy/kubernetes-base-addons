@@ -29,7 +29,7 @@ spec:
       logLevel: error
       image: alejandroesc/traefik
       imageTag: latest
-      replicas: 2
+      replicas: 1
       service:
         labels:
           servicemonitor.kubeaddons.mesosphere.io/path: "metrics"
