@@ -5,7 +5,7 @@ metadata:
   name: traefik-forward-auth
   namespace: kubeaddons
   annotations:
-    catalog.kubeaddons.mesosphere.io/addon-revision: "1.0.4-5"
+    catalog.kubeaddons.mesosphere.io/addon-revision: "1.0.4-6"
 spec:
   kubernetes:
     minSupportedVersion: v1.15.6
