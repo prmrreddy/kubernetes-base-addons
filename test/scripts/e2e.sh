@@ -217,11 +217,6 @@ spec:
         - name: localvolumeprovisioner
           enabled: false
           values: |
-            # Multiple storage classes can be defined here. This allows to, e.g.,
-            # distinguish between different disk types.
-            # For each entry a storage class '$name' and
-            # a host folder '/mnt/$dirName' will be created. Volumes mounted to this
-            # folder are made available in the storage class.
             storageclasses:
               - name: localvolumeprovisioner
                 dirName: disks
