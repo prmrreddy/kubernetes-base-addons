@@ -65,7 +65,7 @@ cd "$PROJECT_ROOT"
 
 # Set up Konvoy
 echo "Setup Konvoy"
-source ${PROJECT_ROOT}/test/scripts/setup-konvoy.sh v1.5.0-beta.7
+source ${PROJECT_ROOT}/test/scripts/setup-konvoy.sh v1.5.0
 
 # Generate SSH Keys
 echo "Generate SSH Keys"
@@ -80,7 +80,7 @@ kind: ClusterProvisioner
 apiVersion: konvoy.mesosphere.io/v1beta2
 metadata:
   name: base-addons-e2e
-  creationTimestamp: "2020-06-26T11:15:02Z"
+  creationTimestamp: "2020-07-29T14:16:29Z"
 spec:
   provider: aws
   aws:
@@ -90,59 +90,59 @@ spec:
       enableInternetGateway: true
       enableVPCEndpoints: false
     availabilityZones:
-    - us-west-2c
+      - us-west-2c
     elb:
       apiServerPort: 6443
     tags:
       owner: danielschmidt
   nodePools:
-  - name: worker
-    count: 4
-    machine:
-      imageID: ami-0bc06212a56393ee1
-      rootVolumeSize: 80
-      rootVolumeType: gp2
-      imagefsVolumeEnabled: true
-      imagefsVolumeSize: 160
-      imagefsVolumeType: gp2
-      imagefsVolumeDevice: xvdb
-      type: m5.2xlarge
-  - name: control-plane
-    controlPlane: true
-    count: 3
-    machine:
-      imageID: ami-0bc06212a56393ee1
-      rootVolumeSize: 80
-      rootVolumeType: io1
-      rootVolumeIOPS: 1000
-      imagefsVolumeEnabled: true
-      imagefsVolumeSize: 160
-      imagefsVolumeType: gp2
-      imagefsVolumeDevice: xvdb
-      type: m5.xlarge
-  - name: bastion
-    bastion: true
-    count: 0
-    machine:
-      imageID: ami-0bc06212a56393ee1
-      rootVolumeSize: 10
-      rootVolumeType: gp2
-      imagefsVolumeEnabled: false
-      type: m5.large
+    - name: worker
+      count: 4
+      machine:
+        imageID: ami-0bc06212a56393ee1
+        rootVolumeSize: 80
+        rootVolumeType: gp2
+        imagefsVolumeEnabled: true
+        imagefsVolumeSize: 160
+        imagefsVolumeType: gp2
+        imagefsVolumeDevice: xvdb
+        type: m5.2xlarge
+    - name: control-plane
+      controlPlane: true
+      count: 3
+      machine:
+        imageID: ami-0bc06212a56393ee1
+        rootVolumeSize: 80
+        rootVolumeType: io1
+        rootVolumeIOPS: 1000
+        imagefsVolumeEnabled: true
+        imagefsVolumeSize: 160
+        imagefsVolumeType: gp2
+        imagefsVolumeDevice: xvdb
+        type: m5.xlarge
+    - name: bastion
+      bastion: true
+      count: 0
+      machine:
+        imageID: ami-0bc06212a56393ee1
+        rootVolumeSize: 10
+        rootVolumeType: gp2
+        imagefsVolumeEnabled: false
+        type: m5.large
   sshCredentials:
     user: centos
     publicKeyFile: base-addons-e2e-ssh.pub
     privateKeyFile: base-addons-e2e-ssh.pem
-  version: v1.5.0-beta.7
+  version: v1.5.0
 ---
 kind: ClusterConfiguration
 apiVersion: konvoy.mesosphere.io/v1beta2
 metadata:
   name: base-addons-e2e
-  creationTimestamp: "2020-06-26T11:15:02Z"
+  creationTimestamp: "2020-07-29T14:16:29Z"
 spec:
   kubernetes:
-    version: 1.17.6
+    version: 1.17.8
     networking:
       podSubnet: 192.168.0.0/16
       serviceSubnet: 10.0.0.0/18
@@ -152,11 +152,11 @@ spec:
       provider: aws
     admissionPlugins:
       enabled:
-      - AlwaysPullImages
-      - NodeRestriction
+        - AlwaysPullImages
+        - NodeRestriction
   containerNetworking:
     calico:
-      version: v3.13.3
+      version: v3.13.4
       encapsulation: ipip
       mtu: 1480
   containerRuntime:
@@ -165,90 +165,100 @@ spec:
   osPackages:
     enableAdditionalRepositories: true
   nodePools:
-  - name: worker
+    - name: worker
   addons:
-  - configRepository: https://github.com/mesosphere/kubernetes-base-addons
-    configVersion: $CONFIG_VERSION
-    addonsList:
-    - name: awsebscsiprovisioner
-      enabled: true
-    - name: awsebsprovisioner
-      enabled: false
-      values: |
-        storageclass:
-          isDefault: false
-    - name: cert-manager
-      enabled: true
-    - name: dashboard
-      enabled: true
-    - name: defaultstorageclass-protection
-      enabled: true
-    - name: dex
-      enabled: true
-    - name: dex-k8s-authenticator
-      enabled: true
-    - name: elasticsearch
-      enabled: true
-    - name: elasticsearch-curator
-      enabled: true
-    - name: elasticsearchexporter
-      enabled: true
-    - name: external-dns
-      enabled: true
-      values: |
-        aws:
-          region:
-        domainFilters: []
-    - name: flagger
-      enabled: false
-    - name: fluentbit
-      enabled: true
-    - name: gatekeeper
-      enabled: true
-    - name: istio # Istio is currently in Preview
-      enabled: false
-    - name: kibana
-      enabled: true
-    - name: konvoyconfig
-      enabled: true
-    - name: kube-oidc-proxy
-      enabled: true
-    - name: localvolumeprovisioner
-      enabled: false
-      values: |
-        storageclasses:
-          - name: localvolumeprovisioner
-            dirName: disks
-            isDefault: false
-            reclaimPolicy: Delete
-            volumeBindingMode: WaitForFirstConsumer
-    - name: nvidia
-      enabled: false
-    - name: opsportal
-      enabled: true
-    - name: prometheus
-      enabled: true
-    - name: prometheusadapter
-      enabled: true
-    - name: reloader
-      enabled: true
-    - name: traefik
-      enabled: true
-    - name: traefik-forward-auth
-      enabled: true
-    - name: velero
-      enabled: true
-  - configRepository: https://github.com/mesosphere/kubeaddons-dispatch
-    configVersion: stable-1.16-1.1.1
-    addonsList:
-    - name: dispatch
-      enabled: false
-  - configRepository: https://github.com/mesosphere/kubeaddons-kommander
-    configVersion: v1.1.0-rc.2
-    addonsList:
-    - name: kommander
-      enabled: true
-  version: v1.5.0-beta.7
+    - configRepository: https://github.com/mesosphere/kubernetes-base-addons
+      configVersion: $CONFIG_VERSION
+      addonsList:
+        - name: awsebscsiprovisioner
+          enabled: true
+        - name: awsebsprovisioner
+          enabled: false
+          values: |
+            storageclass:
+              isDefault: false
+        - name: cert-manager
+          enabled: true
+        - name: dashboard
+          enabled: true
+        - name: defaultstorageclass-protection
+          enabled: true
+        - name: dex
+          enabled: true
+        - name: dex-k8s-authenticator
+          enabled: true
+        - name: elasticsearch
+          enabled: true
+        - name: elasticsearch-curator
+          enabled: true
+        - name: elasticsearchexporter
+          enabled: true
+        - name: external-dns
+          enabled: true
+          values: |
+            aws:
+              region:
+            domainFilters: []
+        - name: flagger
+          enabled: false
+        - name: fluentbit
+          enabled: true
+        - name: gatekeeper
+          enabled: true
+        - name: istio # Istio is currently in Preview
+          enabled: false
+        - name: kibana
+          enabled: true
+        - name: konvoyconfig
+          enabled: true
+        - name: kube-oidc-proxy
+          enabled: true
+        - name: localvolumeprovisioner
+          enabled: false
+          values: |
+            # Multiple storage classes can be defined here. This allows to, e.g.,
+            # distinguish between different disk types.
+            # For each entry a storage class '$name' and
+            # a host folder '/mnt/$dirName' will be created. Volumes mounted to this
+            # folder are made available in the storage class.
+            storageclasses:
+              - name: localvolumeprovisioner
+                dirName: disks
+                isDefault: false
+                reclaimPolicy: Delete
+                volumeBindingMode: WaitForFirstConsumer
+        - name: nvidia
+          enabled: false
+        - name: opsportal
+          enabled: true
+        - name: prometheus
+          enabled: true
+        - name: prometheusadapter
+          enabled: true
+        - name: reloader
+          enabled: true
+        - name: traefik
+          enabled: true
+        - name: traefik-forward-auth
+          enabled: true
+        - name: velero
+          enabled: true
+    - configRepository: https://github.com/mesosphere/kubeaddons-conductor
+      configVersion: stable-1.17-1.0.0
+      addonsList:
+        - name: conductor
+          enabled: false
+    - configRepository: https://github.com/mesosphere/kubeaddons-dispatch
+      configVersion: stable-1.17-1.2.2
+      addonsList:
+        - name: dispatch
+          enabled: false
+    - configRepository: https://github.com/mesosphere/kubeaddons-kommander
+      configVersion: stable-1.17-1.1.0
+      addonsList:
+        - name: kommander
+          enabled: true
+  version: v1.5.0
 EOF
 
 # Start the cluster
