@@ -389,6 +389,7 @@ configInline:
 ---
 # Reduce resource limits so elasticsearch will deploy on a kind cluster with limited memory.
 client:
+  replicas: 1
   heapSize: 256m
   resources:
     limits:
@@ -398,6 +399,7 @@ client:
       cpu: 500m
       memory: 256Mi
 master:
+  replicas: 2
   heapSize: 256m
   resources:
     limits:
@@ -407,6 +409,7 @@ master:
       cpu: 100m
       memory: 256Mi
 data:
+  replicas: 1
   persistence:
     size: 4Gi
   heapSize: 1024m
