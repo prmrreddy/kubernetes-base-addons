@@ -59,6 +59,7 @@ function teardown() {
 }
 
 # install system test dependencies in the background
+cd "$KOMMANDER_REPO_PATH/system-tests"
 npm install >"$OUTPUT_PATH/system-test-install.log" 2>&1 &
 INSTALL_PID=$!
 
