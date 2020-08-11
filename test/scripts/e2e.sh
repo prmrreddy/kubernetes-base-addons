@@ -100,6 +100,7 @@ spec:
       apiServerPort: 6443
     tags:
       owner: danielschmidt
+      expiration: 3h
   nodePools:
     - name: worker
       count: 4
