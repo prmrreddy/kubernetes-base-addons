@@ -57,6 +57,13 @@ spec:
         replicas: 4
         updateStrategy:
           type: RollingUpdate
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health?local=true
+            port: 9200
+          initialDelaySeconds: 10
+          failureThreshold: 6
+          periodSeconds: 10
         hooks:
           drain:
             enabled: false
