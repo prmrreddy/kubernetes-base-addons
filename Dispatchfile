@@ -34,30 +34,6 @@ dindTask("dispatch-e2e-test",
             args=["git", "fetch", "origin", "master"]),
 
         v1.Container(
-            name="install-ui-dependencies",
-            image="mesosphere/kommander-ci:1045-0bc7580",
-            workingDir="/workspace/ui-git",
-            resources=k8s.corev1.ResourceRequirements(
-                limits={
-                    "cpu": k8s.resource_quantity("1000m"),
-                    "memory": k8s.resource_quantity("8Gi")
-                }
-            ),
-            args=["npm", "install"]),
-
-        v1.Container(
-            name="install-ui-test-dependencies",
-            image="mesosphere/kommander-ci:1045-0bc7580",
-            workingDir="/workspace/ui-git/system-tests",
-            resources=k8s.corev1.ResourceRequirements(
-                imits={
-                    "cpu": k8s.resource_quantity("8000m"),
-                    "memory": k8s.resource_quantity("6Gi")
-                }
-            ),
-            args=["npm", "install"]),
-
-        v1.Container(
             name="run-e2e-tests",
             image="mesosphere/kommander-ci:1045-0bc7580",
             workingDir="/workspace/kba-git-resource",

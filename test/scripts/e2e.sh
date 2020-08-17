@@ -57,6 +57,10 @@ function teardown() {
   rm -f inventory.yaml
 }
 
+# install system test dependencies in the background
+npm install >"$OUTPUT_PATH/system-test-install.log" 2>&1 &
+INSTALL_PID=$!
+
 cd "$PROJECT_ROOT"
 
 # Set up Konvoy
@@ -259,4 +263,5 @@ export OPS_PORTAL_PASSWORD=$(kubectl get -n kubeaddons secret ops-portal-credent
 
 # Run system tests against the cluster
 cd "$KOMMANDER_REPO_PATH/system-tests"
+wait $INSTALL_PID
 CLUSTER_URL=$CLUSTER_URL OPS_PORTAL_USER=$OPS_PORTAL_USER OPS_PORTAL_PASSWORD=$OPS_PORTAL_PASSWORD AWS_ACCESS_KEY=$AWS_ACCESS_KEY AWS_SECRET_KEY=$AWS_SECRET_KEY LICENSE=$LICENSE npm test
