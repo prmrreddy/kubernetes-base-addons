@@ -52,7 +52,7 @@ function teardown() {
 
   cd "$PROJECT_ROOT"
   ./konvoy diagnose --logs-all-namespaces -y -o "$OUTPUT_PATH/base-addons-e2e.tar.gz"
-  ./konvoy down --yes
+  # ./konvoy down --yes
 
   rm -f clustername-ssh.{pem,pub}
   rm -f inventory.yaml
