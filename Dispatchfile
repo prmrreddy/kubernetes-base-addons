@@ -19,24 +19,24 @@ resource("artifacts", type="storage", params={
 })
 
 git_resource(git_clone_dirname, url="$(context.git.url)", revision="$(context.git.commit)")
-gitResource("ui-git", url="git@github.com:mesosphere/kommander.git", revision="master")
+git_resource("ui-git", url="git@github.com:mesosphere/kommander.git", revision="master")
 
 kind_cluster=make_kind_cluster(kind_cluster_name, git_clone_dirname)
 
 dindTask("dispatch-e2e-test",
-    inputs=["kba-git-resource", "ui-git"],
+    inputs=[git_clone_dirname, "ui-git"],
     outputs=["artifacts"],
     steps=[
         v1.Container(
             name="fetch-master",
             image="mesosphere/dispatch-dind:v0.5.2",
-            workingDir="/workspace/kba-git-resource",
+            workingDir="/workspace/" + git_clone_dirname,
             args=["git", "fetch", "origin", "master"]),
 
         v1.Container(
             name="run-e2e-tests",
             image="mesosphere/kommander-ci:1045-0bc7580",
-            workingDir="/workspace/kba-git-resource",
+            workingDir="/workspace/" + git_clone_dirname,
             resources=k8s.corev1.ResourceRequirements(
                 limits={
                     "cpu": k8s.resource_quantity("8000m"),
@@ -47,11 +47,11 @@ dindTask("dispatch-e2e-test",
                 k8s.corev1.EnvVar(name="DISPATCH_CI", value="true"),
                 k8s.corev1.EnvVar(name="OUTPUT_PATH", value="$(resources.outputs.artifacts.path)"),
                 k8s.corev1.EnvVar(name="AWS_REGION", value="us-west-2"),
-                k8s.corev1.EnvVar(name="AWS_ACCESS_KEY", valueFrom=secretVar("rotator-ksphere-kommander", "AWS_ACCESS_KEY_ID")),
-                k8s.corev1.EnvVar(name="AWS_SECRET_KEY", valueFrom=secretVar("rotator-ksphere-kommander", "AWS_SECRET_ACCESS_KEY")),
-                k8s.corev1.EnvVar(name="AWS_ACCESS_KEY_ID", valueFrom=secretVar("rotator-ksphere-kommander", "AWS_ACCESS_KEY_ID")),
-                k8s.corev1.EnvVar(name="AWS_SECRET_ACCESS_KEY", valueFrom=secretVar("rotator-ksphere-kommander", "AWS_SECRET_ACCESS_KEY")),
-                k8s.corev1.EnvVar(name="LICENSE", valueFrom=secretVar("kommander-license", "LICENSE"))
+                k8s.corev1.EnvVar(name="AWS_ACCESS_KEY", valueFrom=secret_var("rotator-ksphere-kommander", "AWS_ACCESS_KEY_ID")),
+                k8s.corev1.EnvVar(name="AWS_SECRET_KEY", valueFrom=secret_var("rotator-ksphere-kommander", "AWS_SECRET_ACCESS_KEY")),
+                k8s.corev1.EnvVar(name="AWS_ACCESS_KEY_ID", valueFrom=secret_var("rotator-ksphere-kommander", "AWS_ACCESS_KEY_ID")),
+                k8s.corev1.EnvVar(name="AWS_SECRET_ACCESS_KEY", valueFrom=secret_var("rotator-ksphere-kommander", "AWS_SECRET_ACCESS_KEY")),
+                k8s.corev1.EnvVar(name="LICENSE", valueFrom=secret_var("kommander-license", "LICENSE"))
             ],
             command=["/entrypoint.sh", "./test/scripts/e2e.sh", "$(context.git.branch)"]),
     ])
@@ -107,8 +107,8 @@ dindTask("lint-yaml",
 
 clean_kind=cleanup(kind_cluster, "dispatch-integration-test", git_clone_dirname)
 
-action(tasks=["dispatch-e2e-test"], on=pullRequest())
-action(tasks=["dispatch-e2e-test"], on=pullRequest(chatops=["test-e2e"]))
+action(tasks=["dispatch-e2e-test"], on=pull_request())
+action(tasks=["dispatch-e2e-test"], on=pull_request(chatops=["test-e2e"]))
 
 action(tasks=["dispatch-integration-test", clean_kind], on=pull_request())
 action(tasks=["dispatch-integration-test", clean_kind], on=pull_request(chatops=["test"]))
