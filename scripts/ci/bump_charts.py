@@ -139,7 +139,8 @@ def update_chart(chart, info):
             stream.seek(0)
             yaml.indent(sequence=4, offset=2)
             yaml.dump(loaded, stream)
-            subprocess.run(["git", "commit", "-am", '"Bump {} to {}"'.format(chart, chart_version_from_search)], check=True)
+            subprocess.run(['git', 'add', info['file_path']], check=True)
+            subprocess.run(["git", "commit", "-m", '"Bump {} to {}"'.format(chart, chart_version_from_search)], check=True)
 
         subprocess.run(['git', 'push', '-u', 'origin', new_branch_name], check=True)
         url = 'https://api.github.com/repos/mesosphere/kubernetes-base-addons/pulls'
@@ -157,9 +158,47 @@ def update_chart(chart, info):
         print('Chart version is already at the latest.\n')
 
 
+def get_addon_info(addons, code_to_url, url_to_code, addon_dir, folder):
+    subfolders = os.listdir(os.path.join(addon_dir, folder))
+    subfolders.sort(key=cmp_to_key(compare_versions))
+    latest_subfolder = ''
+    if subfolders:
+        latest_subfolder = subfolders[-1]
+    yaml_files = [file for file in os.listdir(os.path.join(addon_dir, folder, latest_subfolder))]
+    yaml_files.sort(key=cmp_to_key(compare_yaml_files))
+    latest_yaml_file = yaml_files[-1]
+    file_path = os.path.join(addon_dir, folder, latest_subfolder, latest_yaml_file)
+    with open(file_path, 'r') as stream:
+        yaml = ruamel.yaml.YAML()
+        loaded = yaml.load(stream)
+
+    chart_version = loaded['spec']['chartReference']['version']
+    chart_name = loaded['spec']['chartReference']['chart']
+    if 'stable' in chart_name:
+        chart_name = chart_name.split('/')[1]
+    chart_repo_url = loaded['spec']['chartReference'].get('repo', 'https://kubernetes-charts.storage.googleapis.com')
+
+    app_version = ''
+    for k, v in loaded['metadata']['annotations'].items():
+        if k.startswith('appversion'):
+            app_version = v
+
+    repo_code = url_to_code.get(chart_repo_url)
+    if repo_code is None:
+        repo_code = convert_repo_url(chart_repo_url, code_to_url, url_to_code)
+
+    addons[chart_name] = {
+        'repo': repo_code,
+        'chart_version': chart_version,
+        'app_version': app_version,
+        'file_path': file_path,
+    }
+
+
 def get_addon_dir():
     # Separating this in a function to enable mocking in unit tests
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../addons')
+
 
 def main():
     # make sure github token is available
@@ -169,40 +208,11 @@ def main():
     url_to_code = {}
     addon_dir = get_addon_dir()
     for folder in os.listdir(addon_dir):
-        subfolders = os.listdir(os.path.join(addon_dir, folder))
-        subfolders.sort(key=cmp_to_key(compare_versions))
-        latest_subfolder = ''
-        if subfolders:
-            latest_subfolder = subfolders[-1]
-        yaml_files = [file for file in os.listdir(os.path.join(addon_dir, folder, latest_subfolder))]
-        yaml_files.sort(key=cmp_to_key(compare_yaml_files))
-        latest_yaml_file = yaml_files[-1]
-        file_path = os.path.join(addon_dir, folder, latest_subfolder, latest_yaml_file)
-        with open(file_path, 'r') as stream:
-            yaml = ruamel.yaml.YAML()
-            loaded = yaml.load(stream)
-
-        chart_version = loaded['spec']['chartReference']['version']
-        chart_name = loaded['spec']['chartReference']['chart']
-        if 'stable' in chart_name:
-            chart_name = chart_name.split('/')[1]
-        chart_repo_url = loaded['spec']['chartReference'].get('repo', 'https://kubernetes-charts.storage.googleapis.com')
-
-        app_version = ''
-        for k, v in loaded['metadata']['annotations'].items():
-            if k.startswith('appversion'):
-                app_version = v
-
-        repo_code = url_to_code.get(chart_repo_url)
-        if repo_code is None:
-            repo_code = convert_repo_url(chart_repo_url, code_to_url, url_to_code)
-
-        addons[chart_name] = {
-            'repo': repo_code,
-            'chart_version': chart_version,
-            'app_version': app_version,
-            'file_path': file_path,
-        }
+        try:
+            get_addon_info(addons, code_to_url, url_to_code, addon_dir, folder)
+        except Exception as e:
+            print('Got exception trying to get addon info')
+            print(e)
 
     pprint.pprint(addons, indent=8)
 
@@ -213,7 +223,11 @@ def main():
     subprocess.run(['helm', 'repo', 'update'], check=True)
 
     for chart, info in addons.items():
-        update_chart(chart, info)
+        try:
+            update_chart(chart, info)
+        except Exception as e:
+            print('Got exception trying to update a chart:')
+            print(e)
 
 
 if __name__ == '__main__':

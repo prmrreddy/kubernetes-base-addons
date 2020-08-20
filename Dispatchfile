@@ -9,7 +9,7 @@ load("github.com/mesosphere/dispatch-catalog/starlark/stable/pipeline@0.0.7", "p
 git_clone_dirname = "kba-git-src"
 kind_cluster_name = "kba-kind-cluster"
 
-git_resource(git_clone_dirname, url="$(context.git.url)", revision="$(context.git.commit)")
+git_resource(git_clone_dirname, url="https://github.com/mesosphere/kubernetes-base-addons", revision="$(context.git.commit)")
 
 kind_cluster=make_kind_cluster(kind_cluster_name, git_clone_dirname)
 
@@ -97,4 +97,4 @@ action(tasks=["dispatch-integration-test", clean_kind], on=pull_request())
 action(tasks=["dispatch-integration-test", clean_kind], on=pull_request(chatops=["test"]))
 
 action(tasks=["test-bump-charts"], on=pull_request(paths=["scripts/ci/bump_charts.py", "scripts/ci/test_bump_charts.py", "scripts/ci/unit_test_yaml_samples/*"]))
-action(name="weekly-chart-bump", on=cron(schedule="0 6 * * 1"), tasks=["bump-charts"])
+action(name="bump-charts", on=cron(schedule="0 6 * * 1"), tasks=["bump-charts"])
