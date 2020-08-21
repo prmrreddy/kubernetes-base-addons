@@ -51,7 +51,6 @@ function teardown() {
   mv "$KOMMANDER_REPO_PATH/system-tests/cypress/screenshots" "$OUTPUT_PATH/cypress-screenshots" || echo "No screenshots"
 
   cd "$PROJECT_ROOT"
-  ./konvoy diagnose --logs-all-namespaces -y -o "$OUTPUT_PATH/base-addons-e2e.tar.gz"
   ./konvoy down --yes
 
   rm -f clustername-ssh.{pem,pub}
