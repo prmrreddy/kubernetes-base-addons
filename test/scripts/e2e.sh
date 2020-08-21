@@ -280,4 +280,4 @@ kubectl -n kommander set env deploy/kommander-kubeaddons-kommander-ui LOG_LEVEL=
 kubectl -n kommander wait deploy kommander-kubeaddons-kommander-ui --for condition=available --timeout=300s
 kubectl logs -n kommander deploy/kommander-kubeaddons-kommander-ui --ignore-errors -f > "$OUTPUT_PATH/kommander-deploy.log" &
 
-CLUSTER_URL=$CLUSTER_URL OPS_PORTAL_USER=$OPS_PORTAL_USER OPS_PORTAL_PASSWORD=$OPS_PORTAL_PASSWORD AWS_ACCESS_KEY=$AWS_ACCESS_KEY AWS_SECRET_KEY=$AWS_SECRET_KEY LICENSE=$LICENSE ADDONS='none' npm test
+CLUSTER_URL=$CLUSTER_URL OPS_PORTAL_USER=$OPS_PORTAL_USER OPS_PORTAL_PASSWORD=$OPS_PORTAL_PASSWORD AWS_ACCESS_KEY=$AWS_ACCESS_KEY AWS_SECRET_KEY=$AWS_SECRET_KEY LICENSE=$LICENSE npm test
