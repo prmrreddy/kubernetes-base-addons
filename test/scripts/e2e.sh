@@ -57,6 +57,9 @@ function teardown() {
   rm -f inventory.yaml
 }
 
+# install dependencies
+apt-get update && apt-get install -y libgbm-dev
+
 # install system test dependencies in the background
 cd "$KOMMANDER_REPO_PATH"
 npm install >"$OUTPUT_PATH/kommander-install.log" 2>&1 &
