@@ -15,6 +15,15 @@ spec:
   cloudProvider:
     - name: azure
       enabled: false
+    - name: vsphere
+      enabled: false
+      values: |
+        configInline:
+          address-pools:
+          - name: default
+            protocol: layer2
+            # configure addresses if addon is enabled
+            addresses: []
     - name: docker
       enabled: true
       values: |

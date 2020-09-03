@@ -7,7 +7,7 @@ metadata:
   labels:
     kubeaddons.mesosphere.io/name: dex
   annotations:
-    catalog.kubeaddons.mesosphere.io/addon-revision: "2.22.0-8"
+    catalog.kubeaddons.mesosphere.io/addon-revision: "2.22.0-9"
     appversion.kubeaddons.mesosphere.io/dex: "2.22.0"
     values.chart.helm.kubeaddons.mesosphere.io/dex: "https://raw.githubusercontent.com/mesosphere/charts/1691f6b7f7faa5842a2a30d684839a68819d8682/stable/dex/values.yaml"
 spec:
@@ -19,6 +19,8 @@ spec:
     - name: azure
       enabled: true
     - name: gcp
+      enabled: true
+    - name: vsphere
       enabled: true
     - name: docker
       enabled: true
