@@ -51,6 +51,8 @@ function teardown() {
   mv "$KOMMANDER_REPO_PATH/system-tests/cypress/screenshots" "$OUTPUT_PATH/cypress-screenshots" || echo "No screenshots"
 
   cd "$PROJECT_ROOT"
+  # Delete provisioned clusters
+  kubectl delete konvoycluster --all-namespaces --all --wait
   ./konvoy down --yes
 
   rm -f clustername-ssh.{pem,pub}
