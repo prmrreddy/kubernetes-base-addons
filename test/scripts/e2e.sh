@@ -3,6 +3,7 @@ set -ex
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" && pwd)"
 DEFAULT_KOMMANDER_PATH='/workspace/ui-git'
 DEFAULT_OUTPUT_PATH='/workspace/output/artifacts'
+NEW_UUID=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
 CONFIG_VERSION=$1
 KOMMANDER_REPO_PATH="${KOMMANDER_REPO_PATH:-$DEFAULT_KOMMANDER_PATH}"
@@ -286,4 +287,4 @@ kubectl -n kommander set env deploy/kommander-kubeaddons-kommander-ui LOG_LEVEL=
 kubectl -n kommander wait deploy kommander-kubeaddons-kommander-ui --for condition=available --timeout=300s
 kubectl logs -n kommander deploy/kommander-kubeaddons-kommander-ui --ignore-errors -f > "$OUTPUT_PATH/kommander-deploy.log" &
 
-CLUSTER_URL=$CLUSTER_URL OPS_PORTAL_USER=$OPS_PORTAL_USER OPS_PORTAL_PASSWORD=$OPS_PORTAL_PASSWORD AWS_ACCESS_KEY=$AWS_ACCESS_KEY AWS_SECRET_KEY=$AWS_SECRET_KEY LICENSE=$LICENSE ADDONS="cassandra,jenkins,kafka,spark,zookeeper" npm test
+NEW_UUID=$NEW_UUID CLUSTER_URL=$CLUSTER_URL OPS_PORTAL_USER=$OPS_PORTAL_USER OPS_PORTAL_PASSWORD=$OPS_PORTAL_PASSWORD AWS_ACCESS_KEY=$AWS_ACCESS_KEY AWS_SECRET_KEY=$AWS_SECRET_KEY LICENSE=$LICENSE ADDONS="cassandra,jenkins,kafka,spark,zookeeper" npm test

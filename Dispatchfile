@@ -51,7 +51,10 @@ dindTask("dispatch-e2e-test",
                 k8s.corev1.EnvVar(name="AWS_SECRET_KEY", valueFrom=secret_var("rotator-ksphere-kommander", "AWS_SECRET_ACCESS_KEY")),
                 k8s.corev1.EnvVar(name="AWS_ACCESS_KEY_ID", valueFrom=secret_var("rotator-ksphere-kommander", "AWS_ACCESS_KEY_ID")),
                 k8s.corev1.EnvVar(name="AWS_SECRET_ACCESS_KEY", valueFrom=secret_var("rotator-ksphere-kommander", "AWS_SECRET_ACCESS_KEY")),
-                k8s.corev1.EnvVar(name="LICENSE", valueFrom=secret_var("kommander-license", "LICENSE"))
+                k8s.corev1.EnvVar(name="LICENSE", valueFrom=secret_var("kommander-license", "LICENSE")),
+                k8s.corev1.EnvVar(name="COMMIT", value="$(context.git.commit)"),
+                k8s.corev1.EnvVar(name="COMMIT_INFO_BRANCH", value="$(context.git.branch)"),
+                k8s.corev1.EnvVar(name="COMMIT_INFO_SHA", value="$(context.git.commit)")
             ],
             command=["/entrypoint.sh", "./test/scripts/e2e.sh", "$(context.git.branch)"]),
     ])
