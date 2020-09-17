@@ -60,7 +60,7 @@ function teardown() {
   rm -f inventory.yaml
 }
 
-# install dependencies
+# install cypress dependencies
 apt-get update && apt-get install -y libgbm-dev
 
 # install system test dependencies in the background
